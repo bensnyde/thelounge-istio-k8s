@@ -19,4 +19,6 @@ All traffic to and from the the application container is ran through an Envoy pr
 ## Expose Ingress Gateway (if necessary)
     kubectl -n istio-system port-forward --address 0.0.0.0 service/istio-ingressgateway 8000:80
 
+
+
 Then you can access TheLounge at http://[yourcloudhostname]:8000.
