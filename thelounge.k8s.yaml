@@ -1,0 +1,66 @@
+##################################################################################################
+# This file defines the service and deployment for the thelounge.chat IRC client.
+#
+#   The default credentials are test/test.
+#
+#   You can replace the USERNAME env value below with your preferred username. 
+#
+#   kubectl apply -f thelounge.k8s.yaml
+#
+##################################################################################################
+
+##################################################################################################
+# Service
+##################################################################################################
+kind: Service
+apiVersion: v1
+metadata:
+  name: thelounge-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: thelounge
+  ports:
+    - port: 80
+      protocol: TCP
+      targetPort: 9000
+---
+##################################################################################################
+# Deployment
+##################################################################################################
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: thelounge-deployment
+  labels:
+    app: thelounge
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: thelounge
+  template:
+    metadata:
+      labels:
+        app: thelounge
+    spec:
+      containers:
+        - name: thelounge
+          image: thelounge/thelounge:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9000
+          env:
+            - name: USERNAME
+              value: "test"
+          command: ["/bin/bash", "-c"]
+          args: ["\
+                  until curl --head localhost:15000 ; \
+                    do echo Waiting for Sidecar; \
+                    sleep 3 ; \
+                  done ; \
+                  echo Sidecar available; \
+                  mkdir -p /var/opt/thelounge/users; \
+                  /usr/local/bin/docker-entrypoint.sh; \
+                  echo '{\"password\":\"$2a$11$.sR9V89KXUPCB7byuhxL4OywcCP8Z0DsuHI4JsogLvJKJ9TFJ9n5m\",\"log\":true}' > /var/opt/thelounge/users/$(USERNAME).json ; \
+                  thelounge start"]
