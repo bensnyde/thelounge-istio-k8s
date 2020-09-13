@@ -1,5 +1,5 @@
 # thelounge-istio-k8s
-Kubernetes + Istio deployment scripts for [thelounge](https://thelounge.chat) IRC client
+Kubernetes + Istio deployment scripts for [TheLounge](https://thelounge.chat) IRC client
 
 ### Credentials
 The default credentials are:
