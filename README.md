@@ -10,13 +10,13 @@ You can overwrite either by modifying the irc.k8s.yaml Deployment *command*.
 
 ### Traffic
 All traffic to and from the the application container is ran through an Envoy proxy courtesy of Istio. 
-
-* Ingress traffic is currently wide-open, expose the port with:
-
-    kubectl -n istio-system port-forward --address 0.0.0.0 service/istio-ingressgateway 8888:80
-
+* Ingress traffic is currently wide-open
 * Egress traffic is currently restricted to tls://chat.freenode.net:6697 
 
 ### Application: 
     kubectl apply -f *.k8s.yaml
     
+## Expose Ingress Gateway (if necessary)
+    kubectl -n istio-system port-forward --address 0.0.0.0 service/istio-ingressgateway 8000:80
+
+Then you can access TheLounge at http://[yourcloudhostname]:8000.
