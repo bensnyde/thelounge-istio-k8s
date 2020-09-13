@@ -1,0 +1,66 @@
+##################################################################################################
+# IngressGateway
+##################################################################################################
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: irc-ig
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+    tls:
+      httpsRedirect: false
+---
+##################################################################################################
+# VirtaulService
+##################################################################################################
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: irc-vs
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - irc-ig
+  http:
+  - route:
+    - destination:
+        host: thelounge-service
+---
+##################################################################################################
+# DestinationRule
+##################################################################################################
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: irc-destrule
+spec:
+  host: thelounge-service
+  trafficPolicy:
+    loadBalancer:
+      simple: LEAST_CONN
+---
+##################################################################################################
+# ServiceEntry
+##################################################################################################
+apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
+metadata:
+  name: irc-se
+spec:
+  hosts:
+  - chat.freenode.net
+  ports:
+  - number: 6697
+    name: encrypted
+    protocol: TLS
+  resolution: DNS
+  location: MESH_EXTERNAL
